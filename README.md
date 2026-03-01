@@ -2,7 +2,7 @@
 
 An interactive ethical dilemma simulator that explores moral philosophy through the lens of the classic trolley problem and its many variants. Discover whether you lean **utilitarian** or **deontological** in your moral reasoning.
 
-![Next.js](https://img.shields.io/badge/Next.js-15.5.3-black?logo=next.js)
+![Next.js](https://img.shields.io/badge/Next.js-16.1.6-black?logo=next.js)
 ![React](https://img.shields.io/badge/React-19.2.4-61DAFB?logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss)
@@ -104,7 +104,7 @@ app/
 
 ## 🛠️ Tech Stack
 
-- **Framework**: [Next.js 15](https://nextjs.org/) with App Router
+- **Framework**: [Next.js 16](https://nextjs.org/) with App Router
 - **Language**: [TypeScript 5](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
 - **Fonts**: Geist Sans & Geist Mono
