@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { scenarios } from "../scenarios";
 import type { UserChoice } from "../types";
 import ScenarioCard from "../components/ScenarioCard";
@@ -100,8 +101,17 @@ export default function TestPage() {
 
       <div className="relative z-10 px-4 py-8 md:py-12">
         {/* Header */}
-        <header className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-serif font-bold text-[#e8dcc8] tracking-tight">
+        <header className="max-w-4xl mx-auto mb-8">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-[#8a7a5a] hover:text-[#c9a96e] transition-colors text-sm mb-4"
+          >
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="w-3.5 h-3.5">
+              <path d="M11 1L4 8l7 7" />
+            </svg>
+            Back to Home
+          </Link>
+          <h1 className="text-3xl md:text-4xl font-serif font-bold text-[#e8dcc8] tracking-tight text-center">
             The Trolley Problem
           </h1>
           <div className="w-16 h-px bg-[#c9a96e]/30 mx-auto mt-3" />

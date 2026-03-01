@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Trolley Problem Simulator" }],
   creator: "Trolley Problem Simulator",
-  metadataBase: new URL("https://trolley-problem.vercel.app"),
+  metadataBase: new URL("https://trolley-problem-simulator.vercel.app/"),
   openGraph: {
     title: "The Trolley Problem — An Ethical Dilemma Simulator",
     description:
