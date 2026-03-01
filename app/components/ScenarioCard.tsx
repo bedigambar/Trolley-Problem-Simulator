@@ -160,6 +160,7 @@ export default function ScenarioCard({
         }, 1000);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [timedMode, TIMER_DURATION]
   );
 

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import type { UserChoice } from "../types";
 import ResultsDashboard from "../components/ResultsDashboard";
 
@@ -66,7 +67,7 @@ export default function ResultPage() {
       <div className="relative z-10 px-4 py-8 md:py-12">
         {/* Header */}
         <div className="max-w-4xl mx-auto mb-8">
-          <a
+          <Link
             href="/"
             className="inline-flex items-center gap-1.5 text-[#8a7a5a] hover:text-[#c9a96e] transition-colors text-sm mb-4 cursor-pointer"
           >
@@ -74,7 +75,7 @@ export default function ResultPage() {
               <path d="M11 1L4 8l7 7" />
             </svg>
             Back to Home
-          </a>
+          </Link>
           <h1 className="text-3xl md:text-4xl font-serif font-bold text-[#e8dcc8] tracking-tight text-center">
             The Trolley Problem
           </h1>
