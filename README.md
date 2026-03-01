@@ -159,7 +159,7 @@ Some actions are inherently wrong regardless of outcomes. Using a person as a me
 
 ## 📝 License
 
-MIT License — feel free to use, modify, and distribute.
+[MIT License](https://github.com/bedigambar/Trolley-Problem-Simulator/blob/main/LICENSE) — feel free to use, modify, and distribute.
 
 ## 🙏 Acknowledgments
 
