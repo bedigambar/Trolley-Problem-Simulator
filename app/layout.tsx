@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "The Trolley Problem — An Ethical Dilemma Simulator",
+  title: "The Trolley Problem - An Ethical Dilemma Simulator",
   description:
     "Explore moral philosophy through interactive ethical dilemmas. Discover whether you lean utilitarian or deontological.",
   keywords: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   creator: "Trolley Problem Simulator",
   metadataBase: new URL("https://trolley-problem-simulator.vercel.app/"),
   openGraph: {
-    title: "The Trolley Problem — An Ethical Dilemma Simulator",
+    title: "The Trolley Problem - An Ethical Dilemma Simulator",
     description:
       "Explore moral philosophy through interactive ethical dilemmas. Discover whether you lean utilitarian or deontological.",
     url: "https://trolley-problem.vercel.app",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Trolley Problem — An Ethical Dilemma Simulator",
+    title: "The Trolley Problem - An Ethical Dilemma Simulator",
     description:
       "Explore moral philosophy through interactive ethical dilemmas. Discover whether you lean utilitarian or deontological.",
   },

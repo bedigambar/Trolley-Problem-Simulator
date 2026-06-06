@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import type { Scenario, UserChoice } from "../types";
+import type { Scenario, UserChoice, AggregateStats } from "../types";
 import TrolleyVisualizer from "./TrolleyVisualizer";
 
 interface ScenarioCardProps {
@@ -14,7 +14,7 @@ interface ScenarioCardProps {
   timerDuration?: number;
 }
 
-const DEFAULT_TIMER_DURATION = 30; // seconds
+const DEFAULT_TIMER_DURATION = 30; 
 
 const difficultyConfig: Record<
   string,
@@ -42,6 +42,21 @@ const difficultyConfig: Record<
   },
 };
 
+const LOCAL_SEED_STATS: Record<string, { optionA: number; optionB: number }> = {
+  classic: { optionA: 73, optionB: 27 },
+  footbridge: { optionA: 21, optionB: 79 },
+  surgeon: { optionA: 9, optionB: 91 },
+  "autonomous-car": { optionA: 54, optionB: 46 },
+  lifeboat: { optionA: 68, optionB: 32 },
+  "time-traveler": { optionA: 74, optionB: 26 },
+  surveillance: { optionA: 38, optionB: 62 },
+  whistleblower: { optionA: 32, optionB: 68 },
+  "vaccine-lottery": { optionA: 62, optionB: 38 },
+  "ai-judge": { optionA: 41, optionB: 59 },
+  "memory-wipe": { optionA: 52, optionB: 48 },
+  "genetic-edit": { optionA: 28, optionB: 72 },
+};
+
 export default function ScenarioCard({
   scenario,
   index,
@@ -66,7 +81,20 @@ export default function ScenarioCard({
   const [pendingSelection, setPendingSelection] = useState<"A" | "B" | null>(null);
   const [confirmationTimeLeft, setConfirmationTimeLeft] = useState(CONFIRMATION_TIMER);
   const [wasSkipped, setWasSkipped] = useState(false);
-  const [initialChoice, setInitialChoice] = useState<"A" | "B" | null>(null); // Track if answer was changed
+  const [initialChoice, setInitialChoice] = useState<"A" | "B" | null>(null); 
+  const [stats, setStats] = useState<AggregateStats | null>(null);
+
+  const fetchStats = useCallback(() => {
+    fetch("/api/trolley")
+      .then((r) => r.json())
+      .then((data) => setStats(data))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
   const startTime = useRef(Date.now());
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const confirmationTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -79,7 +107,6 @@ export default function ScenarioCard({
   const pendingSelectionRef = useRef<"A" | "B" | null>(null);
   const initialChoiceRef = useRef<"A" | "B" | null>(null);
 
-  // Keep refs in sync
   useEffect(() => {
     selectedRef.current = selected;
   }, [selected]);
@@ -99,7 +126,6 @@ export default function ScenarioCard({
     initialChoiceRef.current = initialChoice;
   }, [initialChoice]);
 
-  // Clear timers on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -107,7 +133,6 @@ export default function ScenarioCard({
     };
   }, []);
 
-  // Handle skipping when timer runs out
   const handleSkip = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     if (confirmationTimerRef.current) clearInterval(confirmationTimerRef.current);
@@ -116,7 +141,6 @@ export default function ScenarioCard({
     setWasSkipped(true);
     setIsRevealed(true);
     
-    // Store skipped choice
     pendingChoice.current = {
       scenarioId: scenario.id,
       choice: null,
@@ -127,13 +151,11 @@ export default function ScenarioCard({
     };
   }, [scenario.id, timedMode]);
 
-  // Initial choice - goes to confirmation phase
   const handleInitialChoice = useCallback(
     (choice: "A" | "B") => {
       if (selectedRef.current || confirmationPhaseRef.current) return;
       if (timerRef.current) clearInterval(timerRef.current);
 
-      // Track initial choice (only set once per question)
       setInitialChoice((prev) => prev === null ? choice : prev);
       
       setPendingSelection(choice);
@@ -141,13 +163,12 @@ export default function ScenarioCard({
       setConfirmationTimeLeft(CONFIRMATION_TIMER);
       setHoveredChoice(null);
 
-      // Start confirmation timer if in timed mode
       if (timedMode) {
         confirmationTimerRef.current = setInterval(() => {
           setConfirmationTimeLeft((prev) => {
             if (prev <= 1) {
               if (confirmationTimerRef.current) clearInterval(confirmationTimerRef.current);
-              // Auto-confirm when confirmation timer runs out
+              
               setTimeout(() => {
                 if (pendingSelectionRef.current && !selectedRef.current) {
                   handleConfirmChoice();
@@ -160,11 +181,10 @@ export default function ScenarioCard({
         }, 1000);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
     [timedMode, TIMER_DURATION]
   );
 
-  // Confirm the pending choice
   const handleConfirmChoice = useCallback(async () => {
     const choice = pendingSelectionRef.current;
     if (!choice || selectedRef.current) return;
@@ -174,7 +194,6 @@ export default function ScenarioCard({
     const responseTimeMs = Date.now() - startTime.current;
     const option = choice === "A" ? scenario.optionA : scenario.optionB;
     
-    // Check if user changed their answer
     const didChangeAnswer = initialChoiceRef.current !== null && initialChoiceRef.current !== choice;
 
     setSelected(choice);
@@ -183,13 +202,11 @@ export default function ScenarioCard({
     setResponseTime(responseTimeMs);
     setIsAnimating(true);
 
-    // Animate trolley
     await new Promise((r) => setTimeout(r, 1400));
     setIsAnimating(false);
     setIsRevealed(true);
     setShowConfidence(true);
 
-    // Store pending choice — onChoice will fire in handleNext with confidence
     pendingChoice.current = {
       scenarioId: scenario.id,
       choice,
@@ -199,19 +216,20 @@ export default function ScenarioCard({
       ...(didChangeAnswer && initialChoiceRef.current ? { changedFrom: initialChoiceRef.current } : {}),
     };
 
-    // Report to server (without confidence for now)
     try {
-      await fetch("/api/trolley", {
+      const res = await fetch("/api/trolley", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(pendingChoice.current),
       });
+      if (res.ok) {
+        fetchStats();
+      }
     } catch {
-      // Silent fail — stats are best-effort
+      
     }
-  }, [scenario, timedMode]);
+  }, [scenario, timedMode, fetchStats]);
 
-  // Change choice - go back to selection
   const handleChangeChoice = useCallback(() => {
     if (confirmationTimerRef.current) clearInterval(confirmationTimerRef.current);
     
@@ -220,7 +238,6 @@ export default function ScenarioCard({
     setTimeLeft(TIMER_DURATION);
     startTime.current = Date.now();
 
-    // Restart main timer if in timed mode
     if (timedMode) {
       hasAutoSubmitted.current = false;
       timerRef.current = setInterval(() => {
@@ -239,10 +256,9 @@ export default function ScenarioCard({
     }
   }, [timedMode, TIMER_DURATION, handleSkip]);
 
-  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if typing in an input
+      
       if (
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement
@@ -251,7 +267,6 @@ export default function ScenarioCard({
 
       const key = e.key.toLowerCase();
 
-      // Handle confirmation phase shortcuts
       if (confirmationPhaseRef.current) {
         if (key === "y" || key === "enter") {
           e.preventDefault();
@@ -281,9 +296,8 @@ export default function ScenarioCard({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleInitialChoice, handleConfirmChoice, handleChangeChoice]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [handleInitialChoice, handleConfirmChoice, handleChangeChoice]); 
 
-  // Timed mode countdown
   useEffect(() => {
     if (!timedMode || selectedRef.current || confirmationPhaseRef.current) return;
 
@@ -310,7 +324,7 @@ export default function ScenarioCard({
   }, [timedMode, scenario.id, handleSkip, TIMER_DURATION]);
 
   const handleNext = () => {
-    // Fire onChoice with the captured confidence
+    
     if (pendingChoice.current) {
       onChoice({ ...pendingChoice.current, confidence: confidence ?? undefined });
       pendingChoice.current = null;
@@ -330,7 +344,7 @@ export default function ScenarioCard({
     setPendingSelection(null);
     setConfirmationTimeLeft(CONFIRMATION_TIMER);
     setWasSkipped(false);
-    setInitialChoice(null); // Reset initial choice for next question
+    setInitialChoice(null); 
     initialChoiceRef.current = null;
     hasAutoSubmitted.current = false;
     startTime.current = Date.now();
@@ -344,9 +358,26 @@ export default function ScenarioCard({
   const currentTimer = confirmationPhase ? confirmationTimeLeft : timeLeft;
   const diff = difficultyConfig[scenario.difficulty] || difficultyConfig["Hard"];
 
+  const getComparisonPercentage = () => {
+    if (!selected) return null;
+    const scenarioStat = stats?.scenarioStats?.[scenario.id];
+    if (scenarioStat && scenarioStat.totalResponses > 0) {
+      const count = selected === "A" ? scenarioStat.optionA : scenarioStat.optionB;
+      return Math.round((count / scenarioStat.totalResponses) * 100);
+    }
+    
+    const fallback = LOCAL_SEED_STATS[scenario.id];
+    if (fallback) {
+      return selected === "A" ? fallback.optionA : fallback.optionB;
+    }
+    return null;
+  };
+
+  const sameChoicePct = getComparisonPercentage();
+
   return (
     <div className="w-full max-w-4xl mx-auto animate-in fade-in duration-500">
-      {/* Progress bar */}
+      {}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-[#8a7a5a] font-mono">
@@ -383,7 +414,7 @@ export default function ScenarioCard({
               style={{ width: `${((index + 1) / total) * 100}%` }}
             />
           </div>
-          {/* Timer bar overlay */}
+          {}
           {timedMode && !selected && !wasSkipped && (
             <div className="absolute top-2 left-0 right-0 h-0.5 bg-[#1a1710]/50 rounded-full overflow-hidden">
               <div
@@ -397,7 +428,7 @@ export default function ScenarioCard({
         </div>
       </div>
 
-      {/* Title */}
+      {}
       <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#e8dcc8] mb-2 tracking-tight">
         {scenario.title}
       </h2>
@@ -405,14 +436,14 @@ export default function ScenarioCard({
         Stakes: {scenario.stakes}
       </p>
 
-      {/* Visualizer */}
+      {}
       <div className="relative">
         <TrolleyVisualizer
           scenario={scenario}
           choiceMade={selected}
           isAnimating={isAnimating}
         />
-        {/* Hover preview overlay */}
+        {}
         {hoveredChoice && !selected && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
             <div
@@ -428,14 +459,14 @@ export default function ScenarioCard({
         )}
       </div>
 
-      {/* Narrative */}
+      {}
       <div className="mt-6 p-5 bg-[#1a1710]/80 rounded-xl border border-[#c9a96e]/10 backdrop-blur-sm">
         <p className="text-[#c4b99a] leading-relaxed text-base">
           {scenario.narrative}
         </p>
       </div>
 
-      {/* Choice buttons */}
+      {}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         <button
           onClick={() => handleInitialChoice("A")}
@@ -452,7 +483,7 @@ export default function ScenarioCard({
                   : "border-[#c9a96e]/15 bg-[#1a1710]/60 hover:border-[#e8dcc8]/40 hover:bg-[#e8dcc8]/5 cursor-pointer"
           }`}
         >
-          {/* Keyboard hint */}
+          {}
           {!selected && !confirmationPhase && !wasSkipped && (
             <span className="absolute top-2 right-2 text-[10px] font-mono text-[#5a5040] opacity-0 group-hover:opacity-100 transition-opacity">
               Press A
@@ -507,7 +538,7 @@ export default function ScenarioCard({
                   : "border-[#c9a96e]/15 bg-[#1a1710]/60 hover:border-[#c9a96e]/40 hover:bg-[#c9a96e]/5 cursor-pointer"
           }`}
         >
-          {/* Keyboard hint */}
+          {}
           {!selected && !confirmationPhase && !wasSkipped && (
             <span className="absolute top-2 right-2 text-[10px] font-mono text-[#5a5040] opacity-0 group-hover:opacity-100 transition-opacity">
               Press B
@@ -548,14 +579,14 @@ export default function ScenarioCard({
         </button>
       </div>
 
-      {/* Keyboard hint bar */}
+      {}
       {!selected && !confirmationPhase && !wasSkipped && (
         <p className="text-center text-[10px] text-[#3d3628] font-mono mt-2 tracking-widest">
           Press A or B to choose
         </p>
       )}
 
-      {/* Confirmation dialog */}
+      {}
       {confirmationPhase && pendingSelection && (
         <div className="mt-6 animate-in slide-in-from-bottom-4 duration-300">
           <div className="p-5 rounded-xl bg-amber-400/10 border-2 border-amber-400/30 text-center">
@@ -586,7 +617,7 @@ export default function ScenarioCard({
         </div>
       )}
 
-      {/* Skipped question notice */}
+      {}
       {wasSkipped && isRevealed && (
         <div className="mt-6 animate-in slide-in-from-bottom-4 duration-300">
           <div className="p-5 rounded-xl bg-red-400/10 border-2 border-red-400/30 text-center">
@@ -606,10 +637,10 @@ export default function ScenarioCard({
         </div>
       )}
 
-      {/* Reveal + Insight + Next */}
+      {}
       {isRevealed && !wasSkipped && (
         <div className="mt-6 flex flex-col items-center gap-4 animate-in slide-in-from-bottom-4 duration-500">
-          {/* Response time badge */}
+          {}
           {responseTime !== null && (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1a1710] border border-[#c9a96e]/15 animate-in fade-in zoom-in-95 duration-300">
               <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5 text-[#c9a96e]/60">
@@ -624,31 +655,49 @@ export default function ScenarioCard({
                 </span>
               </span>
               {responseTime < 10000 && (
-                <span className="text-[10px] text-[#8a7a5a] italic">— instinctive</span>
+                <span className="text-[10px] text-[#8a7a5a] italic">- instinctive</span>
               )}
               {responseTime >= 10000 && responseTime < 15000 && (
-                <span className="text-[10px] text-[#8a7a5a] italic">— deliberate</span>
+                <span className="text-[10px] text-[#8a7a5a] italic">- deliberate</span>
               )}
               {responseTime >= 20000 && (
-                <span className="text-[10px] text-[#8a7a5a] italic">— deeply conflicted</span>
+                <span className="text-[10px] text-[#8a7a5a] italic">- deeply conflicted</span>
               )}
             </div>
           )}
 
-          {/* Philosophy label */}
+          {}
+          {selected && sameChoicePct !== null && (
+            <div className="w-full max-w-lg p-5 rounded-xl bg-[#c9a96e]/5 border border-[#c9a96e]/20 text-center animate-in zoom-in-95 duration-500">
+              <p className="text-[#8a7a5a] text-[10px] font-mono uppercase tracking-widest mb-1.5">
+                Comparative Statistic
+              </p>
+              <p className="text-lg font-serif text-[#e8dcc8]">
+                <span className="font-mono text-3xl font-bold text-[#c9a96e] mr-1.5">
+                  {sameChoicePct}%
+                </span>{" "}
+                of people also chose{" "}
+                <span className="italic font-medium text-[#c9a96e]">
+                  &ldquo;{selected === "A" ? scenario.optionA.label : scenario.optionB.label}&rdquo;
+                </span>
+              </p>
+            </div>
+          )}
+
+          {}
           <div className="p-4 rounded-xl bg-[#1a1710]/80 border border-[#c9a96e]/10 text-center max-w-lg">
             <p className="text-[#c4b99a] text-sm italic font-serif">
               {selected === "A"
                 ? scenario.optionA.philosophy === "utilitarian"
-                  ? "You chose the utilitarian path — maximizing overall well-being, even at the cost of direct action against an individual."
-                  : "You chose the deontological path — prioritizing moral duties and rules over raw outcomes."
+                  ? "You chose the utilitarian path - maximizing overall well-being, even at the cost of direct action against an individual."
+                  : "You chose the deontological path - prioritizing moral duties and rules over raw outcomes."
                 : scenario.optionB.philosophy === "utilitarian"
-                  ? "You chose the utilitarian path — maximizing overall well-being, even at the cost of direct action against an individual."
-                  : "You chose the deontological path — prioritizing moral duties and rules over raw outcomes."}
+                  ? "You chose the utilitarian path - maximizing overall well-being, even at the cost of direct action against an individual."
+                  : "You chose the deontological path - prioritizing moral duties and rules over raw outcomes."}
             </p>
           </div>
 
-          {/* Confidence slider */}
+          {}
           {showConfidence && (
             <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-2 duration-400">
               <p className="text-[10px] font-mono text-[#6a6050] tracking-widest uppercase text-center mb-3">
@@ -699,7 +748,7 @@ export default function ScenarioCard({
             </div>
           )}
 
-          {/* Scenario Variant / Food for Thought */}
+          {}
           <div className="w-full max-w-2xl p-4 rounded-xl bg-[#1a1710]/80 border border-[#c9a96e]/20">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-[#c9a96e]/15 flex items-center justify-center">
@@ -721,7 +770,7 @@ export default function ScenarioCard({
             </div>
           </div>
 
-          {/* Insight toggle */}
+          {}
           <button
             onClick={() => setShowInsight(!showInsight)}
             className="text-[#8a7a5a] text-sm hover:text-[#c9a96e] transition-colors cursor-pointer flex items-center gap-1.5 underline underline-offset-4 decoration-[#c9a96e]/20 hover:decoration-[#c9a96e]/50"

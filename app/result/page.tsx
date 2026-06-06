@@ -24,7 +24,7 @@ export default function ResultPage() {
     } catch {
       // ignore
     }
-    // No choices found — redirect to home
+    // No choices found - redirect to home
     router.replace("/");
   }, [router]);
 

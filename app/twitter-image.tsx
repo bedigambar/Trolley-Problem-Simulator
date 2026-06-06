@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
-export const alt = "The Trolley Problem — An Ethical Dilemma Simulator";
+export const alt = "The Trolley Problem - An Ethical Dilemma Simulator";
 export const size = {
   width: 1200,
   height: 630,

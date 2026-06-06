@@ -43,7 +43,7 @@ function FloatingQuotes() {
           &ldquo;{quote.text}&rdquo;
         </p>
         <p className="text-[#8a7a5a] text-xs mt-1 tracking-widest uppercase">
-          — {quote.author}
+          - {quote.author}
         </p>
       </div>
     </div>
@@ -71,21 +71,21 @@ export default function TrolleyProblemPage() {
       }
       localStorage.removeItem("trolley_choices");
     } catch {
-      // ignore
+      
     }
     handleNavigate("/test");
   };
 
   return (
     <div className={`min-h-screen bg-[#0c0b09] text-[#e8dcc8] relative overflow-hidden transition-all duration-500 ease-out ${pageExit ? "opacity-0 scale-[0.97] blur-sm" : "opacity-100 scale-100 blur-0"}`}>
-      {/* Ambient background — warm candlelight glow */}
+      {}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#c9a96e]/[0.03] rounded-full blur-[120px]" />
         <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[#8a6e3e]/[0.04] rounded-full blur-[100px]" />
         <div className="absolute top-1/3 right-1/3 w-[300px] h-[300px] bg-[#d4b88a]/[0.02] rounded-full blur-[80px]" />
       </div>
 
-      {/* Subtle grain texture overlay */}
+      {}
       <div
         className="fixed inset-0 pointer-events-none opacity-[0.03]"
         style={{
@@ -93,21 +93,21 @@ export default function TrolleyProblemPage() {
         }}
       />
 
-      {/* Content */}
+      {}
       <div className="relative z-10 px-4 py-8 md:py-12">
-        {/* ═══════════════ INTRO / LANDING PAGE ═══════════════ */}
+        {}
         {
           <div className="max-w-3xl mx-auto animate-in fade-in duration-1000">
-            {/* Large philosophical title block */}
+            {}
             <div className="text-center mb-8 pt-4">
-              <p className="text-[#8a7a5a] text-xs tracking-[0.35em] uppercase mb-6 font-mono">
-                A Moral Experiment
-              </p>
-              <h1 className="text-5xl md:text-7xl font-serif font-bold text-[#e8dcc8] leading-[1.1] mb-4">
+              <h1 className="text-5xl md:text-7xl font-serif font-bold text-[#e8dcc8] leading-[1.1] mb-3">
                 What Would
                 <br />
                 <span className="text-[#c9a96e]">You</span> Do?
               </h1>
+              <p className="text-[#8a7a5a] text-xs tracking-[0.35em] uppercase mb-3 font-mono">
+                A Moral Experiment
+              </p>
               <div className="flex items-center justify-center gap-4 mt-6">
                 <div className="w-12 h-px bg-gradient-to-r from-transparent to-[#c9a96e]/40" />
                 <span className="text-[#8a7a5a] text-xs tracking-[0.2em] uppercase">
@@ -116,9 +116,9 @@ export default function TrolleyProblemPage() {
                 <div className="w-12 h-px bg-gradient-to-l from-transparent to-[#c9a96e]/40" />
               </div>
 
-              {/* CTA moved up - right below the title */}
+              {}
               <div className="mt-8 space-y-4">
-                {/* Timed mode toggle */}
+                {}
                 <div className="flex items-center justify-center gap-3">
                   <button
                     onClick={() => setTimedMode(false)}
@@ -147,11 +147,11 @@ export default function TrolleyProblemPage() {
                   </button>
                 </div>
 
-                {/* Custom time picker */}
+                {}
                 {timedMode && (
                   <div className="flex flex-col items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
                     <p className="text-[#c9a96e]/60 text-xs">
-                      Each dilemma auto-submits after {customTime}s — pressure reveals instinct.
+                      Each dilemma auto-submits after {customTime}s - pressure reveals instinct.
                     </p>
                     <div className="flex items-center gap-4 w-full max-w-xs">
                       <span className="text-[10px] font-mono text-[#5a5040] shrink-0">10s</span>
@@ -177,7 +177,7 @@ export default function TrolleyProblemPage() {
                   </div>
                 )}
 
-                {/* Extended mode toggle */}
+                {}
                 <div className="flex items-center justify-center gap-3 pt-2">
                   <button
                     onClick={() => setExtendedMode(false)}
@@ -221,7 +221,7 @@ export default function TrolleyProblemPage() {
                   3–5 minutes &middot; No right answers &middot; Only yours
                 </p>
                 
-                {/* Learn link - right below the CTA */}
+                {}
                 <button
                   onClick={() => handleNavigate("/learn")}
                   className="inline-flex items-center gap-2 text-[#8a7a5a] text-sm hover:text-[#c9a96e] transition-colors group mt-2 cursor-pointer"
@@ -236,13 +236,17 @@ export default function TrolleyProblemPage() {
               </div>
             </div>
 
-            {/* Dynamic hero scene — moody SVG */}
+            {}
             <div className="mb-10 relative">
               <div className="absolute -inset-4 bg-[#c9a96e]/[0.02] rounded-3xl blur-2xl" />
+              <div className="sr-only">
+                A visual representation of the trolley problem: five people on the main track, one person on the side track. The weight of a decision.
+              </div>
               <svg
                 viewBox="0 0 600 260"
                 className="w-full max-w-2xl mx-auto relative"
                 xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
               >
                 <defs>
                   <linearGradient id="introSky" x1="0" y1="0" x2="0" y2="1">
@@ -267,13 +271,13 @@ export default function TrolleyProblemPage() {
                   </filter>
                 </defs>
 
-                {/* Sky */}
+                {}
                 <rect width="600" height="180" fill="url(#introSky)" rx="12" />
-                {/* Ground */}
+                {}
                 <rect y="180" width="600" height="80" fill="url(#introGround)" />
                 <rect y="180" width="600" height="1" fill="#c9a96e" opacity="0.06" />
 
-                {/* Moon */}
+                {}
                 <circle cx="480" cy="50" r="50" fill="url(#moonGlow)">
                   <animate attributeName="r" values="48;52;48" dur="6s" repeatCount="indefinite" />
                 </circle>
@@ -282,7 +286,7 @@ export default function TrolleyProblemPage() {
                 </circle>
                 <circle cx="480" cy="50" r="10" fill="#e8dcc8" opacity="0.15" />
 
-                {/* Stars */}
+                {}
                 {[[70, 25], [150, 45], [230, 18], [330, 38], [400, 58], [540, 30], [100, 65], [280, 55]].map(
                   ([x, y], i) => (
                     <circle key={i} cx={x} cy={y} r={0.8} fill="#c9a96e" opacity={0.2 + (i % 3) * 0.1}>
@@ -291,16 +295,16 @@ export default function TrolleyProblemPage() {
                   )
                 )}
 
-                {/* Main track */}
+                {}
                 <line x1="30" y1="200" x2="570" y2="200" stroke="#5a5040" strokeWidth="3" />
                 {Array.from({ length: 26 }).map((_, i) => (
                   <line key={`t-${i}`} x1={35 + i * 20} y1="197" x2={35 + i * 20} y2="203" stroke="#3d3628" strokeWidth="2" />
                 ))}
 
-                {/* Diverging track */}
+                {}
                 <path d="M 260 200 Q 330 200 410 165" stroke="#5a5040" strokeWidth="2" fill="none" strokeDasharray="5 4" opacity="0.5" />
 
-                {/* Lever — swaying gently */}
+                {}
                 <g transform="translate(255, 183)">
                   <rect x="-2" y="0" width="4" height="20" fill="#8a7a5a" rx="1" />
                   <line x1="0" y1="0" x2="10" y2="-12" stroke="#c9a96e" strokeWidth="2.5" strokeLinecap="round" opacity="0.7">
@@ -311,17 +315,17 @@ export default function TrolleyProblemPage() {
                   </circle>
                 </g>
 
-                {/* Trolley — rolling forward */}
+                {}
                 <g>
                   <animateTransform attributeName="transform" type="translate" values="80,200;230,200;80,200" dur="8s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1" />
                   <rect x="-18" y="-20" width="36" height="16" fill="#c9a96e" opacity="0.8" rx="3" />
                   <rect x="-14" y="-18" width="9" height="7" fill="#0f0e0a" opacity="0.5" rx="1" />
                   <rect x="2" y="-18" width="9" height="7" fill="#0f0e0a" opacity="0.5" rx="1" />
-                  {/* Headlight glow */}
+                  {}
                   <ellipse cx="20" cy="-12" rx="6" ry="4" fill="#c9a96e" opacity="0.15">
                     <animate attributeName="opacity" values="0.1;0.2;0.1" dur="1.2s" repeatCount="indefinite" />
                   </ellipse>
-                  {/* Wheels — spinning */}
+                  {}
                   <circle cx="-10" cy="-2" r="3.5" fill="#1c1914" />
                   <circle cx="10" cy="-2" r="3.5" fill="#1c1914" />
                   <circle cx="-10" cy="-2" r="1.5" fill="#5a5040">
@@ -330,7 +334,7 @@ export default function TrolleyProblemPage() {
                   <circle cx="10" cy="-2" r="1.5" fill="#5a5040">
                     <animateTransform attributeName="transform" type="rotate" values="0 10 -2;360 10 -2" dur="1s" repeatCount="indefinite" />
                   </circle>
-                  {/* Sparks under wheels */}
+                  {}
                   <circle cx="-12" cy="1" r="0.6" fill="#c9a96e" opacity="0.5">
                     <animate attributeName="opacity" values="0;0.6;0" dur="0.3s" repeatCount="indefinite" />
                     <animate attributeName="cx" values="-12;-18" dur="0.3s" repeatCount="indefinite" />
@@ -341,7 +345,7 @@ export default function TrolleyProblemPage() {
                   </circle>
                 </g>
 
-                {/* People on main track — subtle breathing */}
+                {}
                 {[440, 458, 476, 494, 512].map((x, i) => (
                   <g key={`p-${i}`}>
                     <circle cx={x} cy={186} r={3.5} fill="#e8dcc8" opacity="0.7">
@@ -350,28 +354,28 @@ export default function TrolleyProblemPage() {
                     <line x1={x} y1={190} x2={x} y2={197} stroke="#e8dcc8" strokeWidth="1.5" opacity="0.7" />
                   </g>
                 ))}
-                <text x="476" y="215" textAnchor="middle" fill="#e8dcc8" fontSize="9" opacity="0.4" fontStyle="italic">five</text>
+                <text x="476" y="215" textAnchor="middle" fill="#e8dcc8" fontSize="9" opacity="0.4" fontStyle="italic" aria-hidden="true">{"five "}</text>
 
-                {/* Person on alt track — subtle breathing */}
+                {}
                 <g>
                   <circle cx={415} cy={150} r={3.5} fill="#c9a96e" opacity="0.7">
                     <animate attributeName="cy" values="150;148.5;150" dur="2.5s" repeatCount="indefinite" />
                   </circle>
                   <line x1={415} y1={154} x2={415} y2={161} stroke="#c9a96e" strokeWidth="1.5" opacity="0.7" />
                 </g>
-                <text x="415" y="145" textAnchor="middle" fill="#c9a96e" fontSize="9" opacity="0.4" fontStyle="italic">one</text>
+                <text x="415" y="145" textAnchor="middle" fill="#c9a96e" fontSize="9" opacity="0.4" fontStyle="italic" aria-hidden="true">{"one "}</text>
 
-                {/* Bottom text */}
-                <text x="300" y="245" textAnchor="middle" fill="#5a5040" fontSize="10" fontStyle="italic" letterSpacing="2">
-                  the weight of a decision
+                {}
+                <text x="300" y="245" textAnchor="middle" fill="#5a5040" fontSize="10" fontStyle="italic" letterSpacing="2" aria-hidden="true">
+                  {"the weight of a decision"}
                 </text>
               </svg>
             </div>
 
-            {/* Rotating philosopher quotes */}
+            {}
             <FloatingQuotes />
 
-            {/* How it works — elegant cards */}
+            {}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 mt-6">
               <div className="p-5 rounded-xl bg-[#1a1710]/80 border border-[#c9a96e]/10 text-center group hover:border-[#c9a96e]/25 transition-all duration-500">
                 <div className="w-10 h-10 rounded-full bg-[#c9a96e]/10 flex items-center justify-center mx-auto mb-3 text-[#c9a96e] font-serif text-lg group-hover:bg-[#c9a96e]/20 transition-colors">
@@ -381,7 +385,7 @@ export default function TrolleyProblemPage() {
                   {scenarios.length} Dilemmas
                 </p>
                 <p className="text-[#8a7a5a] text-xs leading-relaxed">
-                  Each one a scenario with no easy answer — only consequences.
+                  Each one a scenario with no easy answer - only consequences.
                 </p>
               </div>
               <div className="p-5 rounded-xl bg-[#1a1710]/80 border border-[#c9a96e]/10 text-center group hover:border-[#c9a96e]/25 transition-all duration-500">
@@ -410,7 +414,7 @@ export default function TrolleyProblemPage() {
           </div>
         }
 
-        {/* Footer with social links */}
+        {}
         <footer className="max-w-3xl mx-auto mt-16 pt-8 border-t border-[#c9a96e]/10">
           <div className="flex items-center justify-center gap-6">
             <a
